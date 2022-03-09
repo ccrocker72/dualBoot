@@ -1,22 +1,57 @@
 #!/bin/sh
 
-# this file is run when calling startx
+userresources=$HOME/.Xresources
+usermodmap=$HOME/.Xmodmap
+sysresources=/etc/X11/xinit/.Xresources
+sysmodmap=/etc/X11/xinit/.Xmodmap
 
-# default arch init scripts
-if [ -d /etc/X11/xinit/xinitrc.d ]; then
-    for f in /etc/X11/xinit/xinitrc.d/?*.sh; do
-        [ -x "$f" ] && . "$f"
-    done
+export _JAVA_AWT_WM_NONREPARENTING=1
+export AWT_TOOLKIT=MToolkit
+wmname LG3D
+
+# merge in defaults and keymaps
+
+if [ -f $sysresources ]; then
+
+
+
+
+
+
+
+    xrdb -merge $sysresources
+
 fi
 
-# user init scripts and settings
-[ -r /etc/X11/xinit/.Xmodmap ] && xmodmap /etc/X11/xinit/.Xmodmap
-[ -r ~/.Xmodmap ] && xmodmap ~/.Xmodmap
-[ -r ~/.Xresources ] && xrdb -merge ~/.Xresources
-[ -r ~/.xprofile ] && . ~/.xprofile
+if [ -f $sysmodmap ]; then
+    xmodmap $sysmodmap
+fi
 
-# launch the session, commands below this line will be ignored
-xbindkeys &
-exec slstatus &
-exec dwm
+if [ -f "$userresources" ]; then
 
+
+
+
+
+
+
+    xrdb -merge "$userresources"
+
+fi
+
+if [ -f "$usermodmap" ]; then
+    xmodmap "$usermodmap"
+fi
+
+# start some nice programs
+
+if [ -d /etc/X11/xinit/xinitrc.d ] ; then
+ for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+  [ -x "$f" ] && . "$f"
+ done
+ unset f
+fi
+
+exec dwm &
+nitrogen --restore &
+slstatus
